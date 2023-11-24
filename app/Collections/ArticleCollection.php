@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Collections;
+
+use App\Models\Article;
+
+class ArticleCollection
+{
+    private array $articles;
+
+    public function __construct(array $articles = [])
+    {
+        foreach ($articles as $article)
+        {
+            if (!$article instanceof Article) {
+                continue;
+            }
+            $this->add($article);
+        }
+        $this->articles = $articles;
+    }
+
+    public function add(Article $article): void
+    {
+        $this->articles[] = $article;
+    }
+
+    public function all(): array
+    {
+        return $this->articles;
+    }
+}

@@ -1,0 +1,28 @@
+{% include 'partials/head.twig' %}
+{% include 'partials/navbar.twig' %}
+
+{% if success %}
+    <p class="bg-green-200 text-green-800 p-4">{{ success }}</p>
+{% endif %}
+
+<div class="max-w-2xl mx-auto p-4">
+    <h2 class="text-2xl font-bold mb-4">{{ article.title }}</h2>
+    <img src="https://random.imagecdn.app/500/150" alt="https://random.imagecdn.app/500/150" class="mb-4 rounded-lg">
+    <p class="text-lg">{{ article.description }}</p>
+
+    {# Check if createdAt exists before displaying it #}
+    {% if article.createdAt is not empty %}
+        <p class="text-sm text-gray-500"><small>
+                Created: {{ article.createdAt.setTimezone('Europe/Riga').format('Y.m.d H:i:s') }}
+            </small></p>
+    {% endif %}
+
+    {# Check if updatedAt exists before displaying it #}
+    {% if article.updatedAt is not empty %}
+        <p class="text-sm text-gray-500"><small>
+                Updated: {{ article.updatedAt.setTimezone('Europe/Riga').format('Y.m.d H:i:s') }}
+            </small></p>
+    {% endif %}
+</div>
+
+{% include 'partials/foot.twig' %}

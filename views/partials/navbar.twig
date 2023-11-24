@@ -1,0 +1,31 @@
+<style>
+    .sticky-nav {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+</style>
+
+<nav class="flex justify-between bg-blue-500 text-white sticky-nav">
+    <header class="p-4">
+        <h1 class="text-2xl font-bold">Articles Page</h1>
+    </header>
+    <ul class="flex justify-end space-x-4 p-4">
+        <li>
+            <a href="/articles" class="hover:underline">Home</a>
+        </li>
+        <li>
+            <a href="/article/create" class="hover:underline">Create New</a>
+        </li>
+        {% if article.id %}
+        <li>
+            <a href="/article/edit/{{ article.id }}" class="hover:underline">Edit</a>
+        </li>
+        <li>
+            <form method="post" action="/article/delete/{{ article.id }}">
+                <button type="submit" class="hover:underline">Delete</button>
+            </form>
+        </li>
+        {% endif %}
+    </ul>
+</nav>

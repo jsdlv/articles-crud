@@ -1,0 +1,17 @@
+{% include 'partials/head.twig' %}
+{% include 'partials/navbar.twig' %}
+
+{% if success %}
+    <p class="bg-green-200 text-green-800 p-4">{{ success }}</p>
+{% endif %}
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+    {% for article in articles.all %}
+        <a href="/article/{{ article.id }}" class="block border border-gray-300 p-4 rounded-md hover:bg-gray-100">
+            <h2 class="text-lg font-bold">{{ article.title }}</h2>
+            <p class="text-sm text-gray-500"><small>Created {{ article.timeAgo }}</small></p>
+        </a>
+    {% endfor %}
+</div>
+
+{% include 'partials/foot.twig' %}

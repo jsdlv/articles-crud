@@ -1,0 +1,29 @@
+{% include 'partials/head.twig' %}
+{% include 'partials/navbar.twig' %}
+
+<div class="max-w-md mx-auto p-4">
+    <form method="post" action="/article/{{ article.id }}"  class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+            <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Title: </label>
+            <input id="title" name="title" type="text" value="{{ article.title }}" placeholder="Add title..."
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            {% if title %}
+                <p class="text-red-500 text-xs italic">{{ title }}</p>
+            {% endif %}
+        </div>
+        <div class="mb-6">
+            <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description: </label>
+            <textarea id="description" name="description" rows="5"
+                      placeholder="Add description"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ article.description }}</textarea>
+            {% if description %}
+                <p class="text-red-500 text-xs italic">{{ description }}</p>
+            {% endif %}
+        </div>
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Update</button>
+        </div>
+    </form>
+</div>
+
+{% include 'partials/foot.twig' %}
