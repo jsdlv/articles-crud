@@ -20,8 +20,7 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
 if (isset($_SESSION['flush'])) {
-    foreach ($_SESSION['flush'] as $sessionKey => $sessionValue)
-    {
+    foreach ($_SESSION['flush'] as $sessionKey => $sessionValue) {
         if (is_array($sessionValue) === true) {
             foreach ($sessionValue as $key => $value) {
                 $twig->addGlobal($key, $value);

@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Database\Database;
 use App\Response\RedirectResponse;
 use App\Response\Response;
 use App\Response\ViewResponse;
@@ -14,7 +13,7 @@ use App\Services\Article\UpdateArticleService;
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator as v;
 
-class ArticleController extends Database
+class ArticleController
 {
     public function index(): Response
     {

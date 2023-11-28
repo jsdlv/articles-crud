@@ -11,7 +11,6 @@ abstract class Database
 
     public function __construct()
     {
-        // TODO: Add $_ENV
         $connectionParams = [
             'dbname' => 'articles-crud',
             'user' => 'root',

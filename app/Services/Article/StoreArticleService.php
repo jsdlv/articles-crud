@@ -4,44 +4,27 @@ declare(strict_types=1);
 
 namespace App\Services\Article;
 
-use Carbon\Carbon;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
+use App\Models\Article;
+use App\Repositories\ArticleRepository;
+use App\Repositories\MysqlArticleRepository;
 
 class StoreArticleService
 {
-    protected Connection $database;
+    private ArticleRepository $mysqlArticleRepository;
 
     public function __construct()
     {
-        $connectionParams = [
-            'dbname' => 'articles-crud',
-            'user' => 'root',
-            'password' => $_ENV['DATABASE_PASSWORD'],
-            'host' => 'localhost',
-            'driver' => 'pdo_mysql',
-        ];
-        $this->database = DriverManager::getConnection($connectionParams);
+        $this->mysqlArticleRepository = new MysqlArticleRepository();
     }
 
     public function execute(string $title, string $description): void
     {
-        $this->database->createQueryBuilder()
-            ->insert('articles')
-            ->values(
-                [
-                    'title' => ':title',
-                    'description' => ':description',
-                    'picture' => ':picture',
-                    'created_at' => ':created_at'
-                ]
-            )->setParameters(
-                [
-                    'title' => $title,
-                    'description' => $description,
-                    'picture' => 'https://random.imagecdn.app/500/150',
-                    'created_at' => Carbon::now()
-                ]
-            )->executeQuery();
+        $article = new Article(
+            $title,
+            $description,
+            'https://random.imagecdn.app/500/150'
+        );
+
+        $this->mysqlArticleRepository->save($article);
     }
 }

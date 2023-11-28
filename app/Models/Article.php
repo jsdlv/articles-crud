@@ -16,18 +16,18 @@ class Article
     private ?Carbon $updatedAt;
 
     public function __construct(
-        string $title,
-        string $description,
-        string $picture,
-        string $createdAt,
-        ?int   $id = null,
+        string  $title,
+        string  $description,
+        string  $picture,
+        ?string $createdAt = null,
+        ?int    $id = null,
         ?string $updatedAt = null
     )
     {
         $this->title = $title;
         $this->description = $description;
         $this->picture = $picture;
-        $this->createdAt = new Carbon($createdAt);
+        $this->createdAt = $createdAt == null ? Carbon::now() : new Carbon($createdAt);
         $this->id = $id;
         $this->updatedAt = $updatedAt ? new Carbon($updatedAt) : null;
     }
@@ -60,5 +60,12 @@ class Article
     public function getUpdatedAt(): ?Carbon
     {
         return $this->updatedAt;
+    }
+
+    public function update(array $date): void
+    {
+        $this->title = $date['title'] ?? $this->title;
+        $this->description = $date['$this->description'] ?? $this->description;
+        $this->updatedAt = Carbon::now();
     }
 }
