@@ -19,8 +19,8 @@ $twig = new Environment($loader);
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-if (isset($_SESSION['_flush'])) {
-    foreach ($_SESSION['_flush'] as $sessionKey => $sessionValue)
+if (isset($_SESSION['flush'])) {
+    foreach ($_SESSION['flush'] as $sessionKey => $sessionValue)
     {
         if (is_array($sessionValue) === true) {
             foreach ($sessionValue as $key => $value) {
@@ -49,7 +49,7 @@ switch ($routeInfo[0]) {
         switch (true) {
             case $response instanceof ViewResponse:
                 echo $twig->render($response->getViewName() . '.twig', $response->getData());
-                unset($_SESSION['_flush']);
+                unset($_SESSION['flush']);
                 break;
             case $response instanceof RedirectResponse:
                 header('Location: ' . $response->getLocation());

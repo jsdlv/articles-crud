@@ -2,13 +2,15 @@
 
 namespace App\Controllers;
 
-use App\Collections\ArticleCollection;
 use App\Database\Database;
-use App\Models\Article;
 use App\Response\RedirectResponse;
 use App\Response\Response;
 use App\Response\ViewResponse;
-use Carbon\Carbon;
+use App\Services\Article\DeleteArticleService;
+use App\Services\Article\IndexArticleService;
+use App\Services\Article\ShowArticleService;
+use App\Services\Article\StoreArticleService;
+use App\Services\Article\UpdateArticleService;
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator as v;
 
@@ -16,42 +18,18 @@ class ArticleController extends Database
 {
     public function index(): Response
     {
-        $response = $this->selectAll();
-
-        $articlesCollection = new ArticleCollection();
-
-        foreach ($response as $article) {
-            $articlesCollection->add(new Article(
-                $article['title'],
-                $article['description'],
-                $article['picture'],
-                $article['created_at'],
-                (int)$article['id'],
-                $article['updated_at']
-            ));
-        }
+        $service = new IndexArticleService();
+        $articles = $service->execute();
 
         return new ViewResponse('articles/index', [
-            'articles' => $articlesCollection
+            'articles' => $articles
         ]);
     }
 
     public function show(string $id): Response
     {
-        $response = $this->selectArticle((int)$id);
-
-        if (!$response) {
-            return new ViewResponse('404');
-        }
-
-        $article = new Article(
-            $response['title'],
-            $response['description'],
-            $response['picture'],
-            $response['created_at'],
-            (int)$response['id'],
-            $response['updated_at']
-        );
+        $service = new ShowArticleService();
+        $article = $service->execute($id);
 
         return new ViewResponse('articles/show', [
             'article' => $article
@@ -71,7 +49,6 @@ class ArticleController extends Database
 
     public function store(): Response
     {
-
         $title = $_POST['title'] ?? '';
         $description = $_POST['description'] ?? '';
 
@@ -84,31 +61,22 @@ class ArticleController extends Database
 
         try {
             $validator->assert(['title' => $title, 'description' => $description]);
-            $this->storeArticle($title, $description);
-            $_SESSION['_flush'][] = ['success' => 'Article created'];
+
+            $service = new StoreArticleService();
+            $service->execute($title, $description);
+
+            $_SESSION['flush'][] = ['success' => 'Article created'];
             return new RedirectResponse('/articles');
         } catch (ValidationException $e) {
-            $_SESSION['_flush'][] = $e->getMessages();
+            $_SESSION['flush'][] = $e->getMessages();
             return new RedirectResponse("/article/create?title=$title&description=$description");
         }
     }
 
     public function edit(string $id): Response
     {
-        $response = $this->selectArticle((int)$id);
-
-        if (!$response) {
-            return new ViewResponse('404');
-        }
-
-        $article = new Article(
-            $response['title'],
-            $response['description'],
-            $response['picture'],
-            $response['created_at'],
-            (int)$response['id'],
-            $response['updated_at']
-        );
+        $service = new ShowArticleService();
+        $article = $service->execute($id);
 
         return new ViewResponse('articles/edit', [
             'article' => $article
@@ -129,86 +97,25 @@ class ArticleController extends Database
 
         try {
             $validator->assert(['title' => $title, 'description' => $description]);
-            $this->updateArticle($id, $title, $description);
-            $_SESSION['_flush'][] = ['success' => 'Article updated'];
+
+            $service = new UpdateArticleService();
+            $service->execute($id, $title, $description);
+
+            $_SESSION['flush'][] = ['success' => 'Article updated'];
             return new RedirectResponse('/article/' . $id);
         } catch (ValidationException $e) {
-            $_SESSION['_flush'][] = $e->getMessages();
+            $_SESSION['flush'][] = $e->getMessages();
             return new RedirectResponse('/article/edit/' . $id);
         }
     }
 
     public function delete(string $id): Response
     {
-        $this->deleteArticle((int)$id);
-        $_SESSION['_flush'][] = ['success' => 'Article deleted'];
+        $service = new DeleteArticleService();
+        $service->execute($id);
+
+        $_SESSION['flush'][] = ['success' => 'Article deleted'];
 
         return new RedirectResponse('/articles');
-    }
-
-    private function selectAll(): array
-    {
-        return $this->database->createQueryBuilder()
-            ->select('*')
-            ->from('articles')
-            ->fetchAllAssociative();
-    }
-
-    private function selectArticle(int $id)
-    {
-        return $this->database->createQueryBuilder()
-            ->select('*')
-            ->from('articles')
-            ->where('id = :id')
-            ->setParameter('id', $id)
-            ->fetchAssociative();
-    }
-
-    private function storeArticle(string $title, string $description): void
-    {
-        $this->database->createQueryBuilder()
-            ->insert('articles')
-            ->values(
-                [
-                    'title' => ':title',
-                    'description' => ':description',
-                    'picture' => ':picture',
-                    'created_at' => ':created_at'
-                ]
-            )->setParameters(
-                [
-                    'title' => $title,
-                    'description' => $description,
-                    'picture' => 'https://random.imagecdn.app/500/150',
-                    'created_at' => Carbon::now()
-                ]
-            )->executeQuery();
-    }
-
-    private function updateArticle(int $id, string $title, string $description): void
-    {
-        $this->database->createQueryBuilder()
-            ->update('articles')
-            ->set('title', ':title')
-            ->set('description', ':description')
-            ->set('updated_at', ':updated_at')
-            ->where('id = :id')
-            ->setParameters(
-                [
-                    'title' => $title,
-                    'description' => $description,
-                    'updated_at' => Carbon::now(),
-                    'id' => $id
-                ]
-            )->executeQuery();
-    }
-
-    private function deleteArticle(int $id): void
-    {
-        $this->database->createQueryBuilder()
-            ->delete('articles', 'id')
-            ->where('id = :id')
-            ->setParameter('id', $id)
-            ->executeQuery();
     }
 }
