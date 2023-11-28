@@ -12,7 +12,6 @@ class Article
     private string $description;
     private string $picture;
     private Carbon $createdAt;
-    private string $timeAgo;
     private ?int $id;
     private ?Carbon $updatedAt;
 
@@ -21,7 +20,6 @@ class Article
         string $description,
         string $picture,
         string $createdAt,
-        string $timeAgo,
         ?int   $id = null,
         ?string $updatedAt = null
     )
@@ -30,7 +28,6 @@ class Article
         $this->description = $description;
         $this->picture = $picture;
         $this->createdAt = new Carbon($createdAt);
-        $this->timeAgo = $timeAgo;
         $this->id = $id;
         $this->updatedAt = $updatedAt ? new Carbon($updatedAt) : null;
     }
@@ -53,11 +50,6 @@ class Article
     public function getCreatedAt(): Carbon
     {
         return $this->createdAt;
-    }
-
-    public function getTimeAgo(): string
-    {
-        return $this->timeAgo;
     }
 
     public function getId(): ?int

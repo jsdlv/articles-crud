@@ -21,14 +21,11 @@ class ArticleController extends Database
         $articlesCollection = new ArticleCollection();
 
         foreach ($response as $article) {
-            $timeCreated = Carbon::parse($article['created_at']);
-
             $articlesCollection->add(new Article(
                 $article['title'],
                 $article['description'],
                 $article['picture'],
                 $article['created_at'],
-                $article['timeAgo'] = $this->timeAgo($timeCreated),
                 (int)$article['id'],
                 $article['updated_at']
             ));
@@ -52,7 +49,6 @@ class ArticleController extends Database
             $response['description'],
             $response['picture'],
             $response['created_at'],
-            $response['timeAgo'] = '',
             (int)$response['id'],
             $response['updated_at']
         );
@@ -110,7 +106,6 @@ class ArticleController extends Database
             $response['description'],
             $response['picture'],
             $response['created_at'],
-            $response['timeAgo'] = '',
             (int)$response['id'],
             $response['updated_at']
         );
@@ -215,33 +210,5 @@ class ArticleController extends Database
             ->where('id = :id')
             ->setParameter('id', $id)
             ->executeQuery();
-    }
-
-    private function timeAgo($timeCreated): string
-    {
-        $currentTime = Carbon::now();
-
-        if ($timeCreated->greaterThanOrEqualTo($currentTime)) {
-            return 'just now';
-        }
-
-        if ($timeCreated->diffInSeconds($currentTime) < 60) {
-            return $timeCreated->diffInSeconds($currentTime) . ' seconds ago';
-        } elseif ($timeCreated->diffInMinutes($currentTime) < 60) {
-            $minutes = $timeCreated->diffInMinutes($currentTime);
-            return $minutes . ' minute' . ($minutes > 1 ? 's' : '') . ' ago';
-        } elseif ($timeCreated->diffInHours($currentTime) < 24) {
-            $hours = $timeCreated->diffInHours($currentTime);
-            return $hours . ' hour' . ($hours > 1 ? 's' : '') . ' ago';
-        } elseif ($timeCreated->diffInDays($currentTime) < 30) {
-            $days = $timeCreated->diffInDays($currentTime);
-            return $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
-        } elseif ($timeCreated->diffInMonths($currentTime) < 12) {
-            $months = $timeCreated->diffInMonths($currentTime);
-            return $months . ' month' . ($months > 1 ? 's' : '') . ' ago';
-        } else {
-            $years = $timeCreated->diffInYears($currentTime);
-            return $years . ' year' . ($years > 1 ? 's' : '') . ' ago';
-        }
     }
 }
